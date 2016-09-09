@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# dumptruck
+# Written by CLonsdale
+# The dumptruck takes an asm file and dumps the opcodes into a hex escaped string for use in python
+
+# The asm file needs to have the format specification in the top of the file
+# BITS [16, 32, 64]
