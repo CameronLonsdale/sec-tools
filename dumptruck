@@ -13,8 +13,8 @@ then
 	# Get bytes, trim and escape
 	xxd -p dumptruck.shellcode | tr -d '\n' | sed 's/\([a-f0-9]\{2\}\)/\\x\1/g'
 
-	# sed explanation
-	# get 2 characters that match this patter [a-f0-9]. Capture it and store it in \1
+	# ed explanation
+	# Get 2 characters that match this pattern [a-f0-9]. Capture it and store in the variable \1
 	# Replace it by the characters \\x\1. So b1 becomes \xb1
 
 	rm dumptruck.shellcode
