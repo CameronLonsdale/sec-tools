@@ -1,0 +1,11 @@
+#!/usr/bin/python3
+
+# Playground
+# because the funnest part is when you go down the slide
+#
+# Brute force find the address on the stack where the NOP sled is.
+# This found address is the value you overwrite the return address with
+# This address will be either the start of the shellcode or
+# somewhere in the NOP slide
+#
+# By CLonsdale
