@@ -63,7 +63,7 @@ def bruteForceAddress(output_validation, start=0xffff0000, end=0xffffffff, step=
             print(format(addr, '0x'))
 
         if output.startswith(output_validation):
-            return "\\x" + "\\x".join(format(byte, '0x') for byte in address)
+            return "".join("\\x" + format(byte, '0x') for byte in address)
 
         # Depending on the program, the time may need to be adjusted
         time.sleep(2.25)
