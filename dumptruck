@@ -16,7 +16,7 @@ then
 
     # sed explanation
     # Get 2 characters that match this pattern [a-f0-9]. Capture it and store in the variable \1
-    # Replace it by the characters \\x\1. So b1 becomes \xb1
+    # Replace it by the characters \\x\1. For example, b1 becomes \xb1
 
     rm dumptruck.shellcode
 else
