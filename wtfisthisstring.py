@@ -50,9 +50,9 @@ def baseDecode(data):
 
 if __name__ == "__main__":
     try:
-        wtfstring = open(parseArgs().datafile, 'r').read()
+        wtfstring = open(parseArgs().datafile, 'rb').read()
     except:
         print("Cannot Open file")
         sys.exit()
-
+        
     baseDecode(wtfstring)
