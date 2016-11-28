@@ -4,6 +4,7 @@ import string
 import argparse
 import base64
 import binascii
+import sys
 
 # Coming Later
 # def rotn(message, n=13):
@@ -13,8 +14,8 @@ import binascii
 def parseArgs():
     parser = argparse.ArgumentParser(description="Tries many different \
                     encodings so you can figure out WTF is this string")
-    parser.add_argument('data', type=str,
-                        help="The data to decode")
+    parser.add_argument('datafile', type=str,
+                        help="The file with the data to decode")
 
     args = parser.parse_args()
     return args
@@ -39,14 +40,19 @@ def baseDecode(data):
 
     try:
         print("Base85: " + str(base64.b85decode(data)))
-    except binascii.Error:
+    except:
         print("Cannot be Base85")
 
     try:
         print("Ascii85: " + str(base64.a85decode(data)))
-    except binascii.Error:
+    except:
         print("Cannot be Ascii85")
 
 if __name__ == "__main__":
-    wtfstring = parseArgs().data
+    try:
+        wtfstring = open(parseArgs().datafile, 'r').read()
+    except:
+        print("Cannot Open file")
+        sys.exit()
+
     baseDecode(wtfstring)
