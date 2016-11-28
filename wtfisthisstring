@@ -8,16 +8,16 @@ rprint = lambda x: cprint(x, 'red')
 gprint = lambda x: cprint(x, 'white')
 
 
-def parseArgs():
+def parse_args():
     parser = argparse.ArgumentParser(description="Tries many different \
                     encodings so you can figure out WTF is this string")
-    parser.add_argument('datafile', type=str,
+    parser.add_argument('file', type=str,
                         help="The file with the data to decode")
 
     return parser.parse_args()
 
 
-def baseDecode(data):
+def base_decode(data):
     try:
         gprint("Base16: " + str(base64.b16decode(data, casefold=True)))
     except Exception as e:
@@ -44,16 +44,14 @@ def baseDecode(data):
         rprint("Cannot be Ascii85 : " + str(e))
 
 
-def main():
-    args = parseArgs()
-
+def main(args):
     try:
-        wtfstring = open(args.datafile, 'rb').read()
+        wtfstring = open(args.file, 'rb').read()
     except Exception:
-        rprint("Cannot open " + args.datafile)
+        rprint("Cannot open " + args.file)
         return
 
-    baseDecode(wtfstring)
+    base_decode(wtfstring)
 
 if __name__ == "__main__":
-    main()
+    main(parse_args())
