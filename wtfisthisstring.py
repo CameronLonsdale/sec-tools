@@ -1,15 +1,12 @@
 #!/usr/bin/python3
 
-import string
-import argparse
 import base64
-import binascii
-import sys
+import argparse
+from termcolor import cprint
 
-# Coming Later
-# def rotn(message, n=13):
-#    code_alphabet = string.ascii_lowercase[n:] + string.ascii_lowercase[0:n]
-#    return message.lower().translate(string.maketrans(string.ascii_lowercase, code_alphabet))
+rprint = lambda x: cprint(x, 'red')
+gprint = lambda x: cprint(x, 'white')
+
 
 def parseArgs():
     parser = argparse.ArgumentParser(description="Tries many different \
@@ -17,42 +14,46 @@ def parseArgs():
     parser.add_argument('datafile', type=str,
                         help="The file with the data to decode")
 
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
 
-# Is there a way to iterate over these functions instead?
-# Might be nicer
+
 def baseDecode(data):
     try:
-        print("Base16: " + str(base64.b16decode(data, casefold=True)))
-    except binascii.Error:
-        print("Cannot be Base16")
+        gprint("Base16: " + str(base64.b16decode(data, casefold=True)))
+    except Exception as e:
+        rprint("Cannot be Base16 : " + str(e))
 
     try:
-        print("Base32: " + str(base64.b32decode(data, casefold=True)))
-    except binascii.Error:
-        print("Cannot be Base32")
+        gprint("Base32: " + str(base64.b32decode(data, casefold=True)))
+    except Exception as e:
+        rprint("Cannot be Base32 : " + str(e))
 
     try:
-        print("Base64: " + str(base64.b64decode(data)))
-    except binascii.Error:
-        print("Cannot be Base64")
+        gprint("Base64: " + str(base64.b64decode(data)))
+    except Exception as e:
+        rprint("Cannot be Base64 : " + str(e))
 
     try:
-        print("Base85: " + str(base64.b85decode(data)))
-    except:
-        print("Cannot be Base85")
+        gprint("Base85: " + str(base64.b85decode(data)))
+    except Exception as e:
+        rprint("Cannot be Base85 : " + str(e))
 
     try:
-        print("Ascii85: " + str(base64.a85decode(data)))
-    except:
-        print("Cannot be Ascii85")
+        gprint("Ascii85: " + str(base64.a85decode(data)))
+    except Exception as e:
+        rprint("Cannot be Ascii85 : " + str(e))
+
+
+def main():
+    args = parseArgs()
+
+    try:
+        wtfstring = open(args.datafile, 'rb').read()
+    except Exception:
+        rprint("Cannot open " + args.datafile)
+        return
+
+    baseDecode(wtfstring)
 
 if __name__ == "__main__":
-    try:
-        wtfstring = open(parseArgs().datafile, 'rb').read()
-    except:
-        print("Cannot Open file")
-        sys.exit()
-        
-    baseDecode(wtfstring)
+    main()
