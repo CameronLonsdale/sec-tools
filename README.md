@@ -1,14 +1,20 @@
 # Sec-tools
-A collection of tools to assist in various CTF challenges
+A collection of custom tools to assist in various security challenges
+
+![Capture the Flag](https://i.memecaptain.com/gend_images/KlaO_w.jpg)
+
+# Installation
+```
+git clone git@github.com:CameronLonsdale/sec-tools.git
+cd sec-tools
+virtualenv -p /usr/bin/python3 letsjusthackshit
+source ./letsjusthackshit/bin/activate
+pip install -r requirements.txt
+```
 
 # Tools
-## hex_to_file
-Hex string to bytes in a file
-Python2 and 3
 
-## wtf_is_this 
-Enumerates decodings for a string
-Python3 only
-
-# Dependencies
-- click
+Tool         | Description                                       | Python support
+------------ | ------------------------------------------------- | --------------
+hex_to_file  | Writes a given hex string as bytes to stdout      | 2 & 3
+wtf_is_this  | Enumerates decodings for a strange looking string | 3
