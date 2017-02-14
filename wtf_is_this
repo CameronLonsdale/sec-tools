@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+from base64 import (
+    a85decode, b16decode, b32decode,
+    b64decode, b85decode
+)
+from functools import partial
+
+import click
+
+
+def base_decode(data, verbose):
+    decodings = [
+        ('Base16', partial(b16decode, casefold=True)),
+        ('Base32', partial(b32decode, casefold=True)),
+        ('Base64', b64decode),
+        ('Base85', b85decode),
+        ('ASCII85', a85decode)
+    ]
+
+    for encoding, func in decodings:
+        try:
+            click.secho("{encoding}: {output}".format(
+                encoding=encoding,
+                output=str(func(data))
+            ), fg='green')
+        except ValueError as e:
+            if verbose:
+                click.secho("Cannot be {}: {}".format(encoding, e), fg='red')
+
+
+@click.command()
+@click.option('--verbose', '-v', is_flag=True)
+def main(verbose):
+    """Attempts to decode string against known decodings"""
+    string = click.prompt('', prompt_suffix='')
+    base_decode(string, verbose)
+
+
+if __name__ == '__main__':
+    main()
