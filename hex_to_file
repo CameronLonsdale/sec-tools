@@ -6,7 +6,7 @@ import click
 
 
 @click.command()
-def hex_to_string():
+def hex_to_file():
     """Writes a given hex string as bytes to stdout"""
     hex_string = click.prompt('', prompt_suffix='')
     stdout = getattr(sys.stdout, 'buffer', sys.stdout)
@@ -20,4 +20,4 @@ def hex_to_string():
     stdout.write(byte_string)
 
 if __name__ == '__main__':
-    hex_to_string()
+    hex_to_file()
