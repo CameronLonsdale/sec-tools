@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+import binascii
+import sys
+
+import click
+
+
+@click.command()
+def hex_to_string():
+    """Writes a given hex string as bytes to stdout"""
+    hex_string = click.prompt('', prompt_suffix='')
+    stdout = getattr(sys.stdout, 'buffer', sys.stdout)
+
+    try:
+        byte_string = binascii.unhexlify(hex_string)
+    except binascii.Error as e:
+        click.secho('Invalid hex string: {}'.format(e), fg='red')
+        sys.exit()
+
+    stdout.write(byte_string)
+
+if __name__ == '__main__':
+    hex_to_string()
