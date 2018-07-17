@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ -z $1 ]; then
+	echo "Usage: ./script filename";
+	exit;
+fi
+
+mkdir out
+while read encoding
+do
+	iconv -f $encoding -t UTF-8 $1 -o "out/$encoding";
+done < encodings.list
